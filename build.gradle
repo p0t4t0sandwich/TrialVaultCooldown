@@ -1,0 +1,104 @@
+plugins {
+    id('java')
+    id('com.diffplug.spotless') version('6.25.0')
+    id('com.github.johnrengelman.shadow') version('8.1.1')
+}
+
+sourceCompatibility = targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        name = 'NeuralNexus'
+        url = 'https://maven.neuralnexus.dev/releases'
+    }
+    maven {
+        name = 'NeuralNexus Snapshots'
+        url = 'https://maven.neuralnexus.dev/snapshots'
+    }
+    maven {
+        name = 'NeuralNexus Mirror'
+        url = 'https://maven.neuralnexus.dev/mirror'
+    }
+    maven {
+        name = "minecraft-repo"
+        url = "https://libraries.minecraft.net/"
+    }
+}
+
+dependencies {
+    compileOnly("dev.neuralnexus:taterlib-api:${taterlib_version}")
+    compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.5")
+    compileOnly('org.spongepowered:configurate-hocon:4.1.2')
+}
+
+tasks.withType(ProcessResources).configureEach {
+    filesMatching([
+            'plugin.yml',
+            'bungee.yml',
+            'fabric.mod.json',
+            'META-INF/mods.toml', 'mcmod.info', 'pack.mcmeta',
+            'META-INF/sponge_plugins.json',
+            'velocity-plugin.json'
+    ]) {
+        expand project.properties
+    }
+}
+
+spotless {
+    format 'misc', {
+        target '*.gradle', '.gitattributes', '.gitignore'
+
+        trimTrailingWhitespace()
+        indentWithSpaces()
+        endWithNewline()
+    }
+    java {
+        importOrder()
+        removeUnusedImports()
+        cleanthat()
+        googleJavaFormat('1.17.0').aosp().formatJavadoc(true).reorderImports(true)
+        formatAnnotations()
+        licenseHeader """/**
+ * Copyright (c) \$YEAR Dylan Sperrer - dylan@sperrer.ca
+ * The project is Licensed under <a href="https://github.com/p0t4t0sandwich/TrialVaultCooldown/blob/dev/LICENSE">GPL-3</a>
+ * The API is Licensed under <a href="https://github.com/p0t4t0sandwich/TrialVaultCooldown/blob/dev/LICENSE-API">MIT</a>
+ */
+
+"""
+    }
+}
+
+shadowJar {
+    dependencies {
+        include(dependency("${group_id}:${project_id}:${version}"))
+        exclude('META-INF', 'META-INF/**')
+    }
+    relocate('org.spongepowered.configurate', 'dev.neuralnexus.taterlib.lib.configurate')
+
+    minimize() {
+        exclude(dependency("${group_id}:${project_id}:${version}"))
+    }
+
+    archiveFileName = "${project_id}-${version}.jar"
+
+    manifest {
+        attributes 'Specification-Title': "${project_name}",
+                'Specification-Version': version,
+                'Specification-Vendor': 'NeuralNexus',
+                'Implementation-Version': version,
+                'Implementation-Vendor': 'NeuralNexus',
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+    }
+
+    from(["README.md", "LICENSE", "LICENSE-API"]) {
+        into("META-INF")
+    }
+}
+
+tasks.build.dependsOn(spotlessApply)
+
+artifacts {
+    archives(shadowJar)
+}
