@@ -1,0 +1,31 @@
+plugins {
+    id('java')
+//    id('io.papermc.paperweight.userdev') version('1.7.1')
+}
+
+base {
+    archivesName = "${project_id}-vanilla-${minecraft_version}"
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(java_version)
+sourceCompatibility = targetCompatibility = java_version
+
+//paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
+//paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.REOBF_PRODUCTION
+
+repositories {
+    // NeuralNexus Mirror
+    maven {
+        name = 'NeuralNexus Mirror'
+        url = 'https://maven.neuralnexus.dev/mirror'
+    }
+}
+
+dependencies {
+//    paperweight.paperDevBundle("${bukkit_version}")
+    compileOnly("org.spigotmc:spigot-api:${bukkit_version}")
+}
+
+//tasks.assemble {
+//    dependsOn(reobfJar)
+//}

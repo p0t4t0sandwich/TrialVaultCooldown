@@ -4,7 +4,44 @@ plugins {
     id('com.github.johnrengelman.shadow') version('8.1.1')
 }
 
-sourceCompatibility = targetCompatibility = 1.8
+java.toolchain.languageVersion = JavaLanguageVersion.of(java_version)
+sourceCompatibility = targetCompatibility = java_version
+
+defaultTasks('build')
+
+subprojects {
+    apply(plugin: 'java')
+
+    java.toolchain.languageVersion = JavaLanguageVersion.of(java_version)
+    sourceCompatibility = targetCompatibility = java_version
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+
+        // NeuralNexus Mirror
+        maven {
+            name = 'NeuralNexus Mirror'
+            url = 'https://maven.neuralnexus.dev/mirror'
+        }
+
+        // Bukkit/Bungee
+        maven {
+            name = "spigotmc-repo"
+            url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+        }
+
+        // Paper/Velocity
+        maven {
+            name = "papermc-repo"
+            url = "https://repo.papermc.io/repository/maven-public/"
+        }
+    }
+}
 
 repositories {
     mavenCentral()
@@ -29,18 +66,19 @@ repositories {
 
 dependencies {
     compileOnly("dev.neuralnexus:taterlib-api:${taterlib_version}")
-    compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.5")
+    compileOnly('dev.neuralnexus:entrypoint-spoof:0.1.5')
     compileOnly('org.spongepowered:configurate-hocon:4.1.2')
+
+    implementation(project(':platforms:bukkit'))
+    implementation(project(':platforms:vanilla'))
 }
 
 tasks.withType(ProcessResources).configureEach {
     filesMatching([
             'plugin.yml',
-            'bungee.yml',
             'fabric.mod.json',
-            'META-INF/mods.toml', 'mcmod.info', 'pack.mcmeta',
-            'META-INF/sponge_plugins.json',
-            'velocity-plugin.json'
+            'META-INF/mods.toml', 'pack.mcmeta',
+            'META-INF/sponge_plugins.json'
     ]) {
         expand project.properties
     }
@@ -73,7 +111,6 @@ spotless {
 shadowJar {
     dependencies {
         include(dependency("${group_id}:${project_id}:${version}"))
-        exclude('META-INF', 'META-INF/**')
     }
     relocate('org.spongepowered.configurate', 'dev.neuralnexus.taterlib.lib.configurate')
 
