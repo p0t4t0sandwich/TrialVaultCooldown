@@ -1,6 +1,6 @@
 plugins {
     id('java')
-//    id('io.papermc.paperweight.userdev') version('1.7.1')
+    id('io.papermc.paperweight.userdev') version('1.7.1')
 }
 
 base {
@@ -9,9 +9,6 @@ base {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(java_version)
 sourceCompatibility = targetCompatibility = java_version
-
-//paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
-//paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.REOBF_PRODUCTION
 
 repositories {
     // NeuralNexus Mirror
@@ -22,10 +19,9 @@ repositories {
 }
 
 dependencies {
-//    paperweight.paperDevBundle("${bukkit_version}")
-    compileOnly("org.spigotmc:spigot-api:${bukkit_version}")
+    paperweight.paperDevBundle("${bukkit_version}")
 }
 
-//tasks.assemble {
-//    dependsOn(reobfJar)
-//}
+tasks.assemble {
+    dependsOn(reobfJar)
+}
