@@ -23,7 +23,9 @@ public class BukkitPlugin extends JavaPlugin {
     }
 
     @Override
-    public void onEnable() {}
+    public void onEnable() {
+//        Bukkit.getPluginManager().registerEvents(new BukkitVaultHandler(), this);
+    }
 
     @Override
     public void onDisable() {}

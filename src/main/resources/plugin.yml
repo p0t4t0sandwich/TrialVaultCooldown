@@ -7,10 +7,10 @@ main: '${group_id}.${project_id}.platforms.BukkitPlugin'
 depend: [ TaterLib ]
 depends: [ TaterLib ]
 softdepends: [ ]
+api-version: 1.21
 folia-supported: true
 commands:
-  example:
+  tvc:
     description: Example command
-    usage: /example
-    permission: example.command.example
-    aliases: [ ex ]
+    usage: /tvc
+    permission: tvc.command

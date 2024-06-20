@@ -20,6 +20,7 @@ repositories {
 
 dependencies {
     paperweight.paperDevBundle("${bukkit_version}")
+    compileOnly(project(':src'))
 }
 
 tasks.assemble {

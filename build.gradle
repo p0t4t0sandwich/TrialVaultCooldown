@@ -1,7 +1,7 @@
 plugins {
     id('java')
     id('com.diffplug.spotless') version('6.25.0')
-    id('com.github.johnrengelman.shadow') version('8.1.1')
+    id('io.github.goooler.shadow') version('8.1.7')
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(java_version)
@@ -66,7 +66,7 @@ repositories {
 
 dependencies {
     compileOnly("dev.neuralnexus:taterlib-api:${taterlib_version}")
-    compileOnly('dev.neuralnexus:entrypoint-spoof:0.1.5')
+    compileOnly('dev.neuralnexus:entrypoint-spoof:0.1.8')
     compileOnly('org.spongepowered:configurate-hocon:4.1.2')
 
     implementation(project(':platforms:bukkit'))
@@ -111,6 +111,11 @@ spotless {
 shadowJar {
     dependencies {
         include(dependency("${group_id}:${project_id}:${version}"))
+        include(project(':platforms:bukkit'))
+        include(project(':platforms:vanilla'))
+        include(dependency('org.ow2.asm:asm:9.2'))
+        include(dependency('org.ow2.asm:asm-util:9.2'))
+        exclude('META-INF/**/*')
     }
     relocate('org.spongepowered.configurate', 'dev.neuralnexus.taterlib.lib.configurate')
 
